@@ -17,7 +17,3 @@ class Task(models.Model):
     updated_at  = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='tasks')
-
-
-class Item(models.Model):
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
