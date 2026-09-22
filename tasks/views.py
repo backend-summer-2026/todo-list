@@ -19,7 +19,6 @@ def tasks_view(request: HttpRequest) -> JsonResponse:
     )
     username, password = base64.b64decode(auth.split()[1]).decode().split(':')
     user = authenticate(request, username=username, password=password)
-
     if user is None:
         return JsonResponse(
             data={
@@ -28,6 +27,7 @@ def tasks_view(request: HttpRequest) -> JsonResponse:
             },
             status=404
         )
+
 
     if request.method == 'GET':
         tasks_list = []
@@ -55,3 +55,62 @@ def tasks_view(request: HttpRequest) -> JsonResponse:
             },
             status=201
         )
+
+
+def task_details_view(request: HttpRequest, id: int) -> JsonResponse:
+    auth = request.headers.get('Authorization')
+    if not auth:
+        return JsonResponse(
+        data={
+            "status": "error",
+            "message": "user not found."
+        },
+        status=404
+    )
+    username, password = base64.b64decode(auth.split()[1]).decode().split(':')
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return JsonResponse(
+            data={
+                "status": "error",
+                "message": "user not found."
+            },
+            status=404
+        )
+
+    if request.method == 'GET':
+        try:
+            task = Task.objects.get(id=id, user=user)
+            return JsonResponse(
+                data={
+                    'task': task.to_dict()
+                },
+                status=200
+            )
+        except:
+            return JsonResponse(
+                data={
+                    'status': 'error',
+                    'message': 'task not found'
+                },
+                status=404
+            )
+    if request.method == 'DELETE':
+        try:
+            task = Task.objects.get(id=id, user=user)
+            task.delete()
+            return JsonResponse(
+                data={
+                    'status': 'success',
+                    'message': 'task deleted.'
+                },
+                status=203
+            )
+        except:
+            return JsonResponse(
+                data={
+                    'status': 'error',
+                    'message': 'task not found'
+                },
+                status=404
+            )
