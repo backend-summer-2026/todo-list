@@ -1,6 +1,6 @@
 from django.db import models
 
-from users.models import Account
+from django.contrib.auth.models import User
 
 
 class Task(models.Model):
@@ -16,4 +16,4 @@ class Task(models.Model):
     created_at  = models.DateTimeField(auto_now=True)
     updated_at  = models.DateTimeField(auto_now_add=True)
 
-    user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='tasks')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
